@@ -1,0 +1,95 @@
+% Section 2: standard form LP
+
+\clearpage
+\section{Standard Form LP}
+\begin{equation}
+    \begin{aligned}
+      \min _{\pi \in \mathbb{R}^{m \times n}} & \sum_{i=1}^{m} \sum_{j=1}^{n} c_{i j} \pi_{i j} \\
+      \text { s.t. } & \sum_{j=1}^{n} \pi_{i j}=\mu_{i}, \quad \forall i=1, \ldots, m \\
+      & \sum_{i=1}^{m} \pi_{i j}=\nu_{i}, \quad \forall j=1, \ldots, n \\
+      & \pi_{i j} \geq 0
+    \end{aligned}
+  \end{equation}
+  
+  \vspace{5ex}
+
+\subsection{Calling Mosek and Gurobi}
+
+The standard form can be vectorized as:
+\begin{equation}
+    \begin{aligned}
+      \min _{\pi \in \mathbb{R}^{m \times n}} & c^T \pi \\
+      \text { s.t. } & A \pi = b \\
+      & \pi_{i j} \geq 0
+    \end{aligned}
+  \end{equation}
+
+where 
+$$
+c=\left(c_{11}, c_{21}, \dots c_{n 1}, \dots, c_{1 n}, \dots c_{n n}\right)^{T}
+$$
+
+$$
+\pi=\left(\pi_{11}, \pi_{21}, \ldots \pi_{n 1}, \ldots, \pi_{1 n}, \ldots \pi_{n n}\right)^{T}
+$$
+
+$$
+A=\left(\begin{array}{ccc}
+    {I_{m}} & {\cdots} & {I_{m}} \\
+    {E_{1}} & {\cdots} & {E_{n}}
+    \end{array}\right),\left(E_{j}\right)_{s t}=\delta_{s j}
+$$
+
+$$
+b=\left(\mu_{1}, \dots \mu_{m}, \nu_{1}, \dots \nu_{n}\right)^{T}
+$$
+
+Then we could directly call linear programming solvers provided by Mosek and Gurobi.
+
+\subsection{First Order Method: ADMM}
+For convenience, we reformulate the original primal problem as:
+
+\begin{equation}  
+\begin{array}{rl}
+{\mathrm{(primal)}} & {\min_\pi \sum_{i=1}^{m} \sum_{j=1}^{n} c_{i j} \pi_{i j} + I_{\mathbb{R}_+^{m\times n}}(\pi^\dagger)} \\
+{\text { subject to }} & {\sum_{j=1}^{n} \pi_{i j}=\mu_{i} \forall i=1, \ldots, m} \\
+{} & {\sum_{i=1}^{m} \pi_{i j}=\nu_{j} \forall j=1, \ldots, n} \\
+& \pi = \pi^{\dagger}
+\end{array}
+\end{equation}
+
+Then we have the augmented Lagrangian: 
+
+\begin{equation}
+  \begin{aligned}L(\pi, \pi^{\dagger}, u, v, w)=& \min_\pi \sum_{i=1}^{m} \sum_{j=1}^{n} c_{i j} \pi_{i j} + I_{\mathbb{R}_+^{m\times n}}(\pi^\dagger) \\&+\sum_{i=1}^{m} u_{i}\left(\mu_{i}-\sum_{j=1}^{n} \pi_{i j}\right)+\sum_{j=1}^{n} v_{j}\left(\nu_{j}-\sum_{i=1}^{m} \pi_{i j}\right)+\sum_{i=1}^{m} \sum_{j=1}^{n} w_{i j}\left(\pi_{i j}-\pi^{\dagger}_{i j}\right) \\&+\frac{\rho}{2} \sum_{i=1}^{m}\left(\mu_{i}-\sum_{j=1}^{n} \pi_{i j}\right)^{2}+\frac{\rho}{2} \sum_{j=1}^{n}\left(\nu_{j}-\sum_{i=1}^{m} \pi_{i j}\right)^{2}+\frac{\rho}{2} \sum_{i=1}^{m} \sum_{j=1}^{n}\left(\pi_{i j}-\pi^{\dagger}_{i j}\right)^{2}\end{aligned}
+\end{equation}
+
+$\partial_{\pi_{ij}} L = 0 $ gives: 
+
+\begin{equation}
+  \sum_{k=1}^{n} \pi_{i k}+\sum_{k=1}^{m} \pi_{k j}+\pi_{i j}=\frac{1}{\rho}\left(-e_{i j}+u_{i}+v_{j}-c_{i j}\right)+\mu_{i}+\nu_{j}+\pi_{ij}^{\dagger}
+\end{equation}
+
+$\partial_{\pi^{\dagger}_{ij}} = 0$ gives:
+
+\begin{equation}
+  {\pi^{\dagger}_{ij}} = (\pi_{ij} + \frac{w_{ij}}{\rho})_+
+\end{equation}
+
+\vspace{2ex}
+    \begin{algorithm}[htbp]
+        \SetAlgoNoLine
+        \caption{ADMM method for primal problem} 
+        \KwIn{parameters $\mu$, $\nu$, $c$}
+        \KwIn{step size $\alpha$, penalty $\rho$}
+        Initialize variables $\pi, \pi^{\dagger} = \boldsymbol{0}$\\
+        Initialize variables $u, v, w = \boldsymbol{0}$\\
+        \While{ stopping criterion not met } 
+        {  
+            Update $\pi$: $\boldsymbol{\pi} \leftarrow \operatorname{argmin}_{\pi} L(\pi, \pi^{\dagger}, u, v, w)$\\
+            Update $\pi^{\dagger}$: $\boldsymbol{\pi}^{\dagger} \leftarrow \operatorname{argmin}_{\pi^{\dagger}} L(\pi, \pi^{\dagger}, u, v, w)$\\
+            Update $u$: $\boldsymbol{u} \leftarrow u + \rho\cdot \alpha (\mu - \sum_j \pi_{ij})$\\
+            Update $v$: $\boldsymbol{v} \leftarrow v + \rho\cdot \alpha (\nu - \sum_i \pi_{ij})$\\
+            Update $w$: $\boldsymbol{w} \leftarrow w + \rho\cdot \alpha (\pi - \pi^{\dagger})$\\
+        }
+    \end{algorithm}

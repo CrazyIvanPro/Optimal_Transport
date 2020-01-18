@@ -1,0 +1,85 @@
+\documentclass{article}
+\usepackage{arxiv}
+
+\usepackage[utf8]{inputenc} % allow utf-8 input
+\usepackage[T1]{fontenc}% use 8-bit T1 fonts
+\usepackage{hyperref}   % hyperlinks
+\usepackage{url}% simple URL typesetting
+\usepackage{booktabs}   % professional-quality tables
+\usepackage{amsfonts}   % blackboard math symbols
+\usepackage{nicefrac}   % compact symbols for 1/2, etc.
+\usepackage{microtype}  % microtypography
+\usepackage{lipsum}
+\usepackage[linesnumbered,boxed,ruled,commentsnumbered]{algorithm2e}
+\usepackage{algorithmic}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{amstext}
+\usepackage{subfigure}
+\usepackage{graphicx}
+\usepackage{multirow}
+\usepackage{listings}
+\usepackage{xcolor}
+
+\lstset{
+  language = python, numbers=left, 
+  numberstyle=\tiny,keywordstyle=\color{blue!70},
+  commentstyle=\color{red!50!green!50!blue!50},frame=shadowbox,
+  rulesepcolor=\color{red!20!green!20!blue!20},basicstyle=\ttfamily
+}
+\title{Large-scale Optimal Transport}
+
+
+\author{
+  Yifan Zhang\\
+  Yuanpei College\\
+  Peking University\\
+}
+
+\begin{document}
+\maketitle
+
+% keywords can be removed
+\keywords{Convex Optimization \and Optimal Transport}
+
+\tableofcontents
+
+\section*{}
+
+\vspace{5ex}
+
+
+
+%%%   Section 1: Introduction   %%%
+\input{content-1.tex}
+
+
+%%%   Section 2: Standard Form LP   %%%
+\input{content-2.tex}
+
+
+%%%   Section 3: Problem Background  %%%
+\input{content-3.tex}
+
+
+%%%   Section 4: Algorithms  %%%
+\input{content-4.tex}
+
+
+%%%   Section 5: Numerical Results  %%%
+\input{content-5.tex}
+
+
+%%%   Conclusion   %%%
+\clearpage
+\input{content-6.tex}
+
+
+% Section X: Optimal Transport and Wasserstein GAN: A Machine Learning Perspective
+\input{content-x.tex}
+
+%%%   References   %%%
+\input{references.tex}
+
+\end{document}

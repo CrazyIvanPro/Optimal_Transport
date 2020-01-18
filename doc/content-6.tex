@@ -1,0 +1,15 @@
+% Section 6: Conclusion
+
+\section{Conclusion}
+Optimal Transport Theory has gradually become a popular machine learning theoretical tool in recent years. 
+In this project, we studied the theoretical background of Discrete Optimal Transport and implemented several methods for solving DOT problem.
+To compare these algorithms, we conduct our experiment on artifical datasets and real images provided by DOTmark dataset.
+
+Looking forward, we are aming at implement an algorithm which approaches scales in linear time. we are also expect to improve the stability and robustness 
+of our algorithms with theoretical gurantees and technical feasibility. We have tried to implement the multiscale strategies method presented in \cite{article2} combined with existing methods, which try to
+ establish a multi-layer transport problem so that the measure and cost between each two layers have
+  a similar relationship, then the optimal solution of the original problem can be obtained after several 
+  steps of "expand-correct" steps. Due to limited time, we couldn't present the implemenation here but the essence of this
+  algorithm shows that the intrinsic feature of images in different coarsen level can be utilized for a faster convergence.
+
+What's more, we want to utilize optimal transport as a powerful tool to conquer pratical problems in a bunch of applied areas.
